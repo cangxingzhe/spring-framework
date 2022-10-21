@@ -244,6 +244,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * Create a new AbstractApplicationContext with no parent.
 	 */
 	public AbstractApplicationContext() {
+		// Spring资源加载器
 		this.resourcePatternResolver = getResourcePatternResolver();
 	}
 
@@ -252,7 +253,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @param parent the parent context
 	 */
 	public AbstractApplicationContext(@Nullable ApplicationContext parent) {
+		// 默认构造函数初始化容器id, name, 状态 以及 资源解析器
 		this();
+		// 将父容器的Environment合并到当前容器
 		setParent(parent);
 	}
 
@@ -668,6 +671,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see #getBeanFactory()
 	 */
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
+		// 这里使用了委派设计模式，父类定义了抽象的refreshBeanFactory()方法，具体实现调用子类容器的refreshBeanFactory()方法
 		refreshBeanFactory();
 		return getBeanFactory();
 	}

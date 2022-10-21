@@ -146,7 +146,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		}
 
 		preProcessXml(root);
-		parseBeanDefinitions(root, this.delegate);
+		parseBeanDefinitions(root, this.delegate); // 从Document的根元素开始进行Bean定义的Document对象
 		postProcessXml(root);
 
 		this.delegate = parent;

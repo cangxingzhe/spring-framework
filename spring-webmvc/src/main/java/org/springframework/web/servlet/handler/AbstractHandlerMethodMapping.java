@@ -235,6 +235,8 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * @see BeanFactoryUtils#beanNamesForTypeIncludingAncestors
 	 */
 	protected String[] getCandidateBeanNames() {
+		// 从容器中获取所有 Bean 的名称，detectHandlerMethodsInAncestorContexts 默认false，不从父容器中查找
+		//即默认只查找 SpringMVC 的 IOC 容器，不查找它的父容器 Spring 的 IOC 容器
 		return (this.detectHandlerMethodsInAncestorContexts ?
 				BeanFactoryUtils.beanNamesForTypeIncludingAncestors(obtainApplicationContext(), Object.class) :
 				obtainApplicationContext().getBeanNamesForType(Object.class));
@@ -262,12 +264,15 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 				logger.trace("Could not resolve type for bean '" + beanName + "'", ex);
 			}
 		}
+		// 这里的 isHandler()方法由子类实现，判断是否拥有 @Controller 注解或 @RequestMapping 注解
 		if (beanType != null && isHandler(beanType)) {
+			// 利用反射得到 Bean 中的 Method 并包装成 HandlerMethod，然后放入 Map 中
 			detectHandlerMethods(beanName);
 		}
 	}
 
 	/**
+	 * 将 Bean 的方法转换为 HandlerMethod 对象
 	 * Look for handler methods in the specified handler bean.
 	 * @param handler either a bean name or an actual handler instance
 	 * @see #getMappingForMethod
@@ -377,9 +382,11 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	@Override
 	@Nullable
 	protected HandlerMethod getHandlerInternal(HttpServletRequest request) throws Exception {
+		// 根据当前请求获取“查找路径”
 		String lookupPath = initLookupPath(request);
 		this.mappingRegistry.acquireReadLock();
 		try {
+			// 获取当前请求最佳匹配的处理方法（即Controller类的方法中）
 			HandlerMethod handlerMethod = lookupHandlerMethod(lookupPath, request);
 			return (handlerMethod != null ? handlerMethod.createWithResolvedBean() : null);
 		}

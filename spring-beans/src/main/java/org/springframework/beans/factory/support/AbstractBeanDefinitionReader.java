@@ -225,11 +225,13 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 					"Cannot load bean definitions from location [" + location + "]: no ResourceLoader available");
 		}
 
+		// 模式匹配类型的解析器，这种方式是加载多个满足匹配条件的资源
 		if (resourceLoader instanceof ResourcePatternResolver) {
 			// Resource pattern matching available.
 			try {
+				// 获取到要加载的资源
 				Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
-				int count = loadBeanDefinitions(resources);
+				int count = loadBeanDefinitions(resources);// 委派调用其子类XmlBeanDefinitionReader的方法，实现加载功能
 				if (actualResources != null) {
 					Collections.addAll(actualResources, resources);
 				}
@@ -244,6 +246,7 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 			}
 		}
 		else {
+			// 只能通过绝对路径URL加载单个资源.
 			// Can only load single resources by absolute URL.
 			Resource resource = resourceLoader.getResource(location);
 			int count = loadBeanDefinitions(resource);
